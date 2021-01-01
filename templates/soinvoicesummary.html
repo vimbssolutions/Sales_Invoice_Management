@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<form class="" action="" method="post">
+  {% include "toolbar.html" %}
+      {% csrf_token %}
+<div class="jumbotron" style="height:400px;">
+  <div class="" style="float:left;margin-right:50px;">
+
+    <select name="item" class="form-control">
+                <option selected="selected" disabled>Select</option>
+                <option value="csv">CSV</option>
+                <option value="xlsx">Xlsx</option>
+                <option value="json">Json</option>
+              </select>
+<table border="1">
+
+  <tr>
+    <th>OU Name</th>
+     <td>
+        <select name="soiouorgid" id="soiouorgid" class="form-control">
+          <option selected="selected" disabled>Select</option>
+          {% for uc in douorgid %}
+          <option value="{{uc.Organization_Name}}" {%ifequal soiouorgid uc.Organization_Name %} selected {% endifequal %} >{{uc.Organization_Name}}</option>
+          {% endfor %}
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>Invoice STATUS</th>
+      <td>
+        <select name="sistatus" id="sistatus" class="form-control">
+          <option value="">Select</option>
+          {% for uc in dsistatus %}
+          <option value="{{uc.Code}}" {%ifequal sistatus uc.Code %} selected {% endifequal %} >{{uc.Description}}</option>
+          {% endfor %}
+        </select>
+      </td>
+  </tr>
+  <tr>
+    <th>Invoice Type</th>
+    <td>
+     <select name="sitype" id="sitype" class="form-control">
+       <option value="" >Select</option>
+       {% for uc in dsitype %}
+       <option value="{{uc.Code}}" {%ifequal sitype uc.Code %} selected {% endifequal %} >{{uc.Description}}</option>
+       {% endfor %}
+     </select>
+   </td>
+ </tr>
+ <tr>
+   <th>Customer PO</th>
+   <td> <input type="text"  class="form-control" name="cstpo" id="cstpo"value="{{cstpo}}"> </td>
+
+
+  </tr>
+  <tr>
+    <th>Customer Code</th>
+    <td>
+       <select name="customercode" id="customercode" class="form-control">
+         <option value="" >Select</option>
+         {% for uc in dcustomercode %}
+         <option value="{{uc.Customer_Code}}" {%ifequal customercode uc.Customer_Code %} selected {% endifequal %} >{{uc.Customer_Name}}</option>
+         {% endfor %}
+       </select>
+     </td>
+   </tr>
+   <tr>
+     <th>Custome Address Code</th>
+    <td>
+      <select name="cstaddress" id="cstaddress" class="form-control">
+        <option value="">Select</option>
+        {% for uc in comaddress %}
+        <option value="{{uc.Addresee}}" {%ifequal cstaddress uc.Addresee %} selected {% endifequal %} >{{uc.Addresee}}</option>
+        {% endfor %}
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th>From DATE</th>
+    <td> <input type="date" name="sfdate" value="{{sfdate}}" class="form-control"> </td>
+  </tr>
+  <tr>
+    <th>TO DATE</th>
+    <td> <input type="date" name="stdate" value="{{stdate}}" class="form-control"> </td>
+  </tr>
+</table>
+</div>
+</div>
+
+</form>
+
+<div class="divtablesalesinvoice">
+  <table border="1" class="table">
+    <tr>
+      <th>Customer Name</th>
+      <th>Customer Code</th>
+      <th> <div style="width:200px;">Customer Addresse</div></th>
+      <th><div style="width:120px;">Ou Name</div></th>
+      <th>Invoice Number</th>
+      <th><div style="width:100px;">Invoice Date</div></th>
+      <th>Invoice Type</th>
+      <th>Invoice STATUS</th>
+      <th>Customer PO</th>
+      <th>Remark</th>
+      <th><div style="width:100px;">Item Number</div></th>
+      <th>Line No.</th>
+      <th>Line Shipment</th>
+      <th><div style="width:120px;">Inv Name</div></th>
+      <th>TRX UOM Code</th>
+      <th>TRX Quantity</th>
+      <th>Unit Price</th>
+      <th>Customer Item code</th>
+      <th>Transt. Amount</th>
+      <th>Subinventory Code</th>
+      <th>Locator Code</th>
+      <th>Shipping Inst.</th>
+      <th>Payment Method</th>
+      <th>Payment Term</th>
+      <th>Sales Channel</th>
+      <th>Sales Person</th>
+      <th>Accounting Rule</th>
+      <th>Discount Amount1</th>
+      <th>Discount Amount2</th>
+      <th>Discount Amount3</th>
+      <th>HS CODE</th>
+      <th><div style="width:100px;">Tax Code1</div></th>
+      <th>Tax Amount1</th>
+      <th><div style="width:100px;">Tax Code2</div></th>
+      <th>Tax Amount2</th>
+      <th><div style="width:100px;">Tax Code3</div></th>
+      <th>Tax Amount3</th>
+      <th>Freight Charges</th>
+      <th>Insurance Charges</th>
+      <th>CnF Charges</th>
+      <th><div style="width:200px;">Ship To Address Code</div></th>
+      <th><div style="width:200px;">Bill To Address Code</div></th>
+    </tr>
+    {% for dt in data1 %}
+    <tr>
+      <td>{{dt.Customer_Name}}</td>
+      <td>{{dt.Customer_Code}}</td>
+      <td>
+      {{dt.Address_c}}
+      ,{{dt.Address_Line1_c}}
+      ,{{dt.Address_Line2_c}}
+      ,{{dt.Address_Line3_c}}
+      </td>
+      <td>
+      {{dt.OU_Organization_Name}}
+      </td>
+      <td>{{dt.Invoice_Number}}</td>
+      <td>{{dt.Invoice_Date}}</td>
+      <td>{{dt.Invoice_Type}}</td>
+      <td>{{dt.Invoice_Status}}</td>
+      <td>{{dt.Customer_PO}}</td>
+      <td>{{dt.Remark}}</td>
+      <td>
+      {{dt.Item_Number}}<br>
+      {{dt.Description}}
+      </td>
+      <td>{{dt.SO_Line_Number}}</td>
+      <td>{{dt.SO_Line_Shipment}}</td>
+      <td>
+      {{dt.INV_Organization_Name}}
+      </td>
+      <td>{{dt.TRX_UOM_Code}}</td>
+      <td>{{dt.TRX_Quantity}}</td>
+      <td>{{dt.Unit_Price}}</td>
+      <td>{{dt.Customer_Item_code}}</td>
+      <td>{{dt.Transaction_Amount}}</td>
+      <td>{{dt.Subinventory_Name}}</td>
+      <td>{{dt.Locator_Code}}</td>
+      <td>{{dt.Shipping_Instruction}}</td>
+      <td>{{dt.Payment_Method}}</td>
+      <td>{{dt.Payment_Term}}</td>
+      <td>{{dt.Sales_Channel}}</td>
+      <td>{{dt.Sales_Person}}</td>
+      <td>{{dt.Accounting_Rule}}</td>
+      <td>{{dt.Discount_Amount1}}</td>
+      <td>{{dt.Discount_Amount2}}</td>
+      <td>{{dt.Discount_Amount3}}</td>
+      <td>{{dt.HS_CODE}}</td>
+      <td>{{dt.Tax_Classification_Code1}}</td>
+      <td>{{dt.Tax_Amount1}}</td>
+      <td>{{dt.Tax_Classification_Code2}}</td>
+      <td>{{dt.Tax_Amount2}}</td>
+      <td>{{dt.Tax_Classification_Code3}}</td>
+      <td>{{dt.Tax_Amount3}}</td>
+      <td>{{dt.Freight_Charges}}</td>
+      <td>{{dt.Insurance_Charges}}</td>
+      <td>{{dt.CnF_Charges}}</td>
+      <td>
+        {{dt.Address_s}}
+        ,{{dt.Address_Line1_s}}
+        ,{{dt.Address_Line2_s}}
+        ,{{dt.Address_Line3_s}}
+      </td>
+      <td>
+        {{dt.Address_b}}
+        ,{{dt.Address_Line1_b}}
+        ,{{dt.Address_Line2_b}}
+        ,{{dt.Address_Line3_b}}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+</div>
+
+
+
+<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="helpModalLabel">Sale Invoice Summary</h4>
+      </div>
+      <p>Sale Invoice Summary provide find information about invoice by OU Name, Invoice status, Invoice Type, Customer PO, Customer Code, Custome Address Code and Date.</p>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('#save,#delete').remove()
+  $('.toolbarlogout').append(
+        '<button type="submit" name="export" id="export" class="toolbaricon" data-toggle="tooltip" title="Export" style="margin-right:3px;" ><img src="{% static "logo/Tool Bar/small_export.png" %}" class="toolbarancher" ></button>'
+        )
+</script>
+
+
+{% endblock %}

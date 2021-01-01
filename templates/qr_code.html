@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load qr_code %}
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <style type="text/css">
+
+        html {
+            font-family: "Arimo-Regular", Arial, 'sans-serif';
+            color: #333333;
+        }
+
+
+
+
+
+
+            th {
+                font-size: 12pt;
+                padding: 3px 0;
+                line-height: 1;
+                font-weight: bold;
+                font-family: "Arimo-Regular", Arial, 'sans-serif';
+            }
+
+            td {
+                font-size: 8pt;
+                font-family: "Arimo-Regular", Arial, 'sans-serif';
+                vertical-align: top;
+                padding: 3px 0;
+            }
+
+            td:last-child { padding-bottom: 0; }
+
+        .text-left { text-align: left; }
+        .text-right { text-align: center; }
+        .bottom-10 { margin-bottom: 10px; }
+        .bottom-20 { margin-bottom: 20px; }
+
+        .header { color: #7f7f7f; }
+        .header p { font-size: 13px; line-height: 1.5em; }
+        .header-link { font-weight: bold; text-decoration: none; color: #4F81BD; font-size: 14px; }
+        .logo { margin-bottom: 20px; margin-left: -25px; }
+        .logo img { zoom: 60%; }
+
+        .recipient { margin-left: 7cm; }
+
+        .main h1 {
+            margin: 18px 0 18px 0;
+            font-size: 250%;
+            font-weight: normal;
+            color: #4F81BD;
+        }
+
+        .main h2 {
+            margin: 18px 0 6px 0;
+            font-size: 180%;
+            font-weight: normal;
+        }
+
+        .info { border: 1px solid #4F81BD; padding: 10px; margin-top: 50px; margin-bottom: 50px; }
+        .info a { color: #4F81BD; text-decoration: none; }
+
+
+    </style>
+
+    <title></title>
+  </head>
+
+
+<body>
+
+
+
+
+
+          <div class="main">
+              <h1>Bar Code</h1>
+
+              <table border="1">
+                {% for i in forqr %}
+
+                      <tr>
+                          <th class="text-left" style="font-family: Arimo-Regular;">{{i}}</th>
+                          <td class="text-right"><pdf:barcode value="{{i}}" type="code128" humanreadable="1" align="baseline" /></td>
+                          <td class="text-right"><pdf:barcode value="{{i}}" type="qr" barwidth="60" barheight="60" /></td>
+                      </tr>
+
+                  {% endfor %}
+
+              </table>
+
+          </div>
+
+
+
+  </body>
+</html>

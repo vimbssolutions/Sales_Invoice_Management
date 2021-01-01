@@ -1,0 +1,34 @@
+{% load staticfiles %}
+<div class="toolbarmenu">
+  {% if user.is_authenticated %}
+
+  <div class="toolbaroption" >
+    <button type="submit" name="save" id="save" class="toolbaricon" data-toggle="tooltip" title="Save"><img src="{% static 'logo/Tool Bar/small_save_bouton.png' %}" class="toolbarancher" ></button>
+    <button type="submit" name="search" id="search" class="toolbaricon" data-toggle="tooltip" title="Search" ><img src="{% static 'logo/Tool Bar/Small icon Search.jpg' %}" class="toolbarancher" ></button>
+    <button type="submit" name="delete" id="delete" class="toolbaricon" data-toggle="tooltip" title="Delete" ><img src="{% static 'logo/Tool Bar/Small_Delete.jpg' %}" class="toolbarancher" ></button>
+    <button type="submit" name="cancel" id="cancel" class="toolbaricon" data-toggle="tooltip" title="Cancel" ><img src="{% static 'logo/Tool Bar/Small_Cancel1.jpg' %}" class="toolbarancher" ></button>
+  </div>
+ <div class="toolbardiv1" >
+
+   {% if 'ri_so_invoice' in request.session.Main_Menu %}
+   <a href="{% url 'saleinvoicedata' %}" class="toolbaricon1" data-toggle="tooltip" title="Sales Order Invoice" style="float:right;"><img src="{% static 'logo/Applications/Sales/Small_Invoicing.png' %}" class="toolbarancher" ></a>
+   {% endif%}
+
+
+ </div>
+ <div class="toolbarlogout">
+   <a href="{% url 'logout' %}" class="toolbaricon1"  data-toggle="tooltip" title="Logout" style="float:right;"> <img src="{% static 'logo/Tool bar/Small_Exit1.png' %}" class="toolbarancher" ></a>
+   <a href="{% url 'index' %}" class="toolbaricon1"  data-toggle="tooltip" title="Home" style="float:right;"> <img src="{% static 'logo/Tool bar/Small_home-icons-button.jpg' %}" class="toolbarancher" ></a>\
+    <a  id="helpbtn"  title="Help" style="float:right;" data-toggle="modal" data-target="#helpModal" > <span class="glyphicon glyphicon-question-sign toolbaricon1"></span></a>
+ </div>
+
+
+ {% else %}
+ <div class="toolbarlogout">
+   <a href="{% url 'user_login' %}"  data-toggle="tooltip" title="Login" style="float:right;"> <img src="{% static 'logo/Tool bar/Small login-button.jpg' %}" class="" style="height:38px;width:80px;" ></a>
+ </div>
+
+
+
+ {% endif %}
+ </div>

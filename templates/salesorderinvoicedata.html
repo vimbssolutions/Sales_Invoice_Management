@@ -1,0 +1,1357 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<form class="form-inline" method="post" id="formsaleinvoice">
+  {% include "toolbar.html" %}
+<div class="jumbotron">
+  <div class="container">
+
+    <h4 class="headingtag">Sales Invoice</h4>
+    <ul id="ulerror">
+
+    </ul>
+
+      {% csrf_token %}
+      <input type="hidden" name="user" value="{{user.username}}">
+      <div class="buttons">
+        <a class="showheaderSingle btn btn-default" target="1" >Main</a>
+        <a class="showheaderSingle btn btn-default" target="2" >Payment</a>
+        <a class="showheaderSingle btn btn-default" target="3" >Address</a>
+      </div>
+      <div >
+      <div id="headerinvoice1" class="targetheaderDiv">
+        <table border="1">
+          <input type="hidden" name="invoiceid" value="{{data.Invoice_id}}">
+          <tr>
+            <th>Invoice Number</th>
+            <td><input type="text" name="iono" id="iono" value="{{data.Invoice_Number}}" class="form-control"></td>
+            <th>OU Organization Name</th>
+            <td>
+              <select name="Ihouorgid" id="Ihouorgid" class="form-control" onfocusout="defaultpricelist();" >
+                <option id="unselect" value="">Select</option>
+                {% for uc in douorgid %}
+                <option value="{{uc.Organization_Id}}" index="{{uc.Currency_id}}" {%ifequal data.OU_Organization_Id_id uc.Organization_Id %} selected {% endifequal %}>{{uc.Organization_Name}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <th>Invoice Date</th>
+            <td><input type="date" name="indate" id="indate" value="{{data.Invoice_Date|date:'Y-m-d'}}" class="form-control"></td>
+          </tr>
+          <tr>
+            <th>Invoice Type</th>
+            <td><select name="intype" id="intype" class="form-control" >
+                 <option value="">Select</option>
+                 {% for uc in dintype %}
+                 <option value="{{uc.Code}}" {%ifequal data.Invoice_Type_id uc.Code%} selected {% endifequal %}>{{uc.Description}}</option>
+                 {% endfor %}
+               </select>
+             </td>
+            <th>Invoice Status</th>
+            <td>
+              <select name="instatus" id="instatus" class="form-control" >
+                 <option value="">Select</option>
+                 {% for uc in dinstatus %}
+                 <option value="{{uc.Code}}" {%ifequal data.Invoice_Status_id uc.Code%} selected {% endifequal %}>{{uc.Description}}</option>
+                 {% endfor %}
+               </select>
+             </td>
+            <th>Customer PO</th>
+            <td><input type="text"  class="form-control" name="incstpo" id="incstpo"value="{{data.Customer_PO }}"></td>
+          </tr>
+          <tr>
+            <th>Customer Code</th>
+            <td>
+               <select name="incustomercode" id="incustomercode" class="form-control">
+                 <option value="">Select</option>
+                 {% for uc in dcustomercode %}
+                 <option value="{{uc.Customer_Code}}" {%ifequal data.Customer_Code_id uc.Customer_Code%} selected {% endifequal %}>{{uc.Customer_Name}}</option>
+                 {% endfor %}
+               </select>
+             </td>
+            <th>Customer Name</th>
+            <td> <input type="text" name="incstname" value="{{data.Customer_Name}}" class="form-control"> </td>
+            <th>Custome Address Code</th>
+            <td>
+              <select name="incstaddress" id="incstaddress" class="form-control">
+                <option value="">Select</option>
+                {% for uc in comaddress %}
+                <option value="{{uc.Address_Code}}" {%ifequal data.Customer_Address_Code_id uc.Address_Code %} selected {% endifequal %}>{{uc.Addresee}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            </tr>
+            <tr>
+              <th>Remark</th>
+              <td> <input type="text" name="inremark" value="{{data.Remark}}" class="form-control"> </td>
+              <th>State</th>
+              <td>
+                <select name="instate" id="instate" class="form-control">
+                  <option value="">Select</option>
+                  {% for uc in dstate %}
+                  <option value="{{uc.Code}}" {%ifequal data.State_id uc.Code %} selected {% endifequal %}>{{uc.Description}}</option>
+                  {% endfor %}
+                </select>
+              </td>
+
+            </tr>
+
+
+        </table>
+      </div>
+      <div id="headerinvoice2" class="targetheaderDiv">
+        <table border="1">
+          <tr>
+            <th>Currency<span id="imp">*</span></th>
+            <td>
+              <select name="incurrency" id="incurrency" class="incurrency form-control" >
+                <option value="">Select</option>
+                {% for uc in dcurncy %}
+                <option value="{{uc.Code}}" {%ifequal data.Currency_id uc.Code%} selected {% endifequal %}>{{uc.Code}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <th>Curr Conv date</th>
+            <td> <input type="date" name="incurrdate" id="incurrdate" value="{{data.Curr_Conv_date|date:'Y-m-d'}}" class="incurrdate form-control"> </td>
+            <th>Curr Conv Type</th>
+            <td>
+              <select name="incurrtype" id="incurrtype" class="incurrtype form-control">
+                <option value="">Select</option>
+                {% for uc in dratetype %}
+                <option value="{{uc.Code}}" {%ifequal data.Curr_Conv_Type_id uc.Code%} selected {% endifequal %}>{{uc.Description}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <th>Curr Conv Rate</th>
+            <td> <input type="text" name="incurrrate" pattern="[0-9]+([\.][0-9]{0,2})?" value="{{data.Curr_Conv_Rate|default:'0'}}" id="incurrrate" class="incurrrate form-control"> </td>
+          </tr>
+          <tr>
+            <th>Payment Method</th>
+            <td>
+               <select name="inPaymentMethod" id="inPaymentMethod" class="form-control">
+                 <option value="">Select</option>
+                 {% for uc in dPaymentMethod %}
+                 <option value="{{uc.Code}}" {%ifequal data.Payment_Method_id uc.Code%} selected {% endifequal %}>{{uc.Description}}</option>
+                 {% endfor %}
+               </select>
+             </td>
+             <th>Payment Term</th>
+            <td>
+               <select name="inPaymentTerm" id="inPaymentTerm" class="form-control">
+                 <option value="">Select</option>
+                 {% for uc in dPaymentTerm %}
+                 <option value="{{uc.Code}}" {%ifequal data.Payment_Term_id uc.Code%} selected {% endifequal %}>{{uc.Description}}</option>
+                 {% endfor %}
+               </select>
+             </td>
+            <th>Sales Person<span id="imp">*</span></th>
+            <td>
+              <select name="InSalesPerson" id="InSalesPerson" class="form-control" >
+                <option value="">Select</option>
+                {% for uc in emcode %}
+                <option value="{{uc.Employee_Code}}" {%ifequal data.Sales_Person_id uc.Employee_Code%} selected {% endifequal %}>{{uc.Employee_FirstName}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <th>Sales Channel</th>
+            <td>
+               <select name="inSalesChannel" id="inSalesChannel" class="form-control">
+                 <option value="">Select</option>
+                 {% for uc in dSalesChannel %}
+                 <option value="{{uc.Code}}" {%ifequal data.Sales_Channel_id uc.Code%} selected {% endifequal %}>{{uc.Description}}</option>
+                 {% endfor %}
+               </select>
+             </td>
+
+          </tr>
+          <tr>
+            <th>Price List</th>
+             <td>
+                <select name="inPriceListCode" id="inPriceListCode"  class="inPriceListCode form-control" >
+                  <option value="">Select</option>
+                  {% for uc in dPriceListCode %}
+                  <option value="{{uc.Price_List_Code}}" {%ifequal data.Price_List_Code_id uc.Price_List_Code %} selected {% endifequal %}>{{uc.Price_List_Name}}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            <th>GSTIN No</th>
+            <td> <input type="text" name="ingstin" id="ingstin" value="{{data.GSTIN_No}}" class="form-control"> </td>
+          </tr>
+        </table>
+      </div>
+      <div id="headerinvoice3" class="targetheaderDiv">
+        <table border="1">
+          <tr>
+            <th>Bill To <br>Customer Name</th>
+            <td> <input type="text" name="inbillcstname" id="inbillcstname" value="{{data.Bill_To_Customer_Name}}" class="form-control"> </td>
+            <th>Bill To <br>Address</th>
+            <td>
+              <select name="inbillcstadd" id="inbillcstadd" class="form-control">
+                <option value="">Select</option>
+                {% for uc in caddress1 %}
+                <option value="{{uc.Id}}" index="{{uc.Customer_Code}}" {%ifequal data.Bill_To_Address_Code_id uc.Id%} selected {% endifequal %}>{{uc.Customer_Site_Name}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <th>Ship To <br>Customer Name</th>
+            <td> <input type="text" name="inshipcstname" id="inshipcstname" value="{{data.Ship_To_Customer_Name}}" class="form-control"> </td>
+
+            <th>Ship To <br> Address</th>
+            <td>
+              <select name="inshipcstadd" id="inshipcstadd" class="form-control">
+                <option value="">Select</option>
+                {% for uc in caddress2 %}
+                <option value="{{uc.Id}}" index="{{uc.Customer_Code}}" {%ifequal data.Ship_To_Address_Code_id uc.Id%} selected {% endifequal %}>{{uc.Customer_Site_Name}}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+
+        </table>
+
+      </div>
+      </div>
+      <br>
+      <a id="add" href="javascript:void(0);" class="btn btn-default" style="float: right">
+       <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+       <a id="add1" href="javascript:void(0);" class="btn btn-default" style="float:right;">
+          <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></a>
+          <br><br>
+      <div class="linesaleinvoice" id="linesaleinvoice">
+        <div class="lineinvoice1">
+          <table border="1">
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th>Invoice <br>Line No.</th>
+              <th>Item Number</th>
+              <th>Item Description</th>
+              <th>INV Organization Name</th>
+              <th>TRX UOM <br>Code</th>
+              <th>TRX Quantity</th>
+              <th>Unit Price</th>
+              <th>Transaction <br>Amount</th>
+            </tr>
+            {% for data1 in data1 %}
+            {% if forloop.counter is not 1 %}
+            <div class="lineinvoice1">
+              <table border="1">
+                {% endif %}
+            <tr>
+              <td><a class="btn btn-default downupbtn" role="button" data-toggle="collapse" onclick="downupbtnspanfun({{ forloop.counter|add:'-1' }});" href="#collapseclass{{forloop.counter}}" aria-expanded="false" aria-controls="collapseclass{{forloop.counter}}">
+                <span id="downupbtnspan{{ forloop.counter|add:'-1' }}" target="0" class="glyphicon glyphicon-arrow-down"  aria-hidden="true">
+              </a></td>
+
+              <td><input type="hidden" name="ILinvlineid" class="ILinvlineid" value="{{data1.Invoice_Line_id}}" ></td>
+              <td><input type="checkbox" name="ids" value="{{data1.Invoice_Line_id}}" style="width:30px;" ></td>
+              <td><input type="text" class="form-control ILinvlineno" name="ILinvlineno" value="{{ forloop.counter}}" style="width:70px;"></td>
+
+
+              <td>
+                <div class="input-group" style="width:160px">
+                  <input type="text" name="ILitemno" value="{{data1.Item_Number}}" id="ILitemno" class="ILitemno form-control" onfocusout="itemsearchfun({{ forloop.counter|add:'-1' }});" onkeypress="scanitemfun(event,{{ forloop.counter|add:'-1' }});" style="width:120px;" aria-describedby="itmxyz">
+                  <a data-toggle="modal" data-target="#myModal" onclick="indexfun1({{ forloop.counter|add:'-1' }})" class="itmxyz" >
+                  <h4 ><span class="glyphicon glyphicon-option-horizontal" aria-hidden="true" ></span></h4></a>
+               </div>
+              </td>
+              <td><input type="text" class="itemdec form-control" value=""></td>
+              <td>
+              <select name="ILinvorgid" id="ILinvorgid" class="ILinvorgid form-control">
+                <option value="None">Select</option>
+                {% for uc in dinvorgid %}
+                <option value="{{uc.Organization_Id}}" {%ifequal data1.INV_Organization_Id_id uc.Organization_Id%} selected {% endifequal %}>{{uc.Organization_Name}}</option>
+                {% endfor %}
+              </select>
+              </td>
+            <td>
+              <select name="ILtrxuomcode" id="ILtrxuomcode" class="ILtrxuomcode form-control" >
+                <option value="">Select</option>
+                {% for uc in duomcode %}
+                <option value="{{uc.Code}}"{%ifequal data1.TRX_UOM_Code_id uc.Code%} selected {% endifequal %}>{{uc.Code}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td> <input type="text" name="ILtrxquty" value="{{data1.TRX_Quantity|default:'0'}}"  class="ILtrxquty form-control" onkeyup="totalfun({{ forloop.counter|add:'-1' }}); rowsumfun({{ forloop.counter|add:'-1' }});" style="width:100px;" > </td>
+            <td> <input type="text" name="ILunitprice" value="{{data1.Unit_Price|default:'0'}}" class="ILunitprice form-control" style="width:100px;" > </td>
+            <td> <input type="text" name="ILtranamount" value="{{data1.Transaction_Amount|default:'0'}}" class="ILtranamount form-control" style="width:100px;" > </td>
+
+            </tr>
+            </table>
+            </div>
+            <div class="collapse" id="collapseclass{{forloop.counter}}">
+
+              <table border="1">
+                <tr>
+                  <th>SO Number</th>
+                  <td>
+                    <select name="ILsono" id="ILsono" onfocusout="sonumberfun({{ forloop.counter|add:'-1' }})" class="ILsono form-control ILsono">
+                      <option value="">Select</option>
+                      {% for uc in dsono %}
+                      <option value="{{uc}}" {%ifequal data1.SO_Number uc %} selected {% endifequal %}>{{uc}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <th>SO Line Number</th>
+                  <td>
+                    <select  name="ILsolineno" id="ILsolineno" onfocusout="solinefun({{ forloop.counter|add:'-1' }})" class="ILsolineno form-control shextra" style="width:100px;">
+                      <option value="">Select</option>
+                      {% ifnotequal data1.SO_Line_Number None %}
+                      <option value="{{data1.SO_Line_Number}}" selected>{{data1.SO_Line_Number}}</option>
+                      {% endifnotequal %}
+                    </select>
+                  </td>
+                  <th>Shipment Id</th>
+                  <td><input type="text" class="form-control ILshipid" name="ILshipid" value="{{data1.Shipment_Id|default_if_none:""}}" style="width:100px;"></td>
+                  <th>Shipment Tran. No</th>
+                  <td><input type="text" class="form-control ILshiptranid" name="ILshiptranid" value="{{data1.Shipment_Transaction_No|default_if_none:""}}" style="width:100px;"></td>
+                  <th>Customer PO</th>
+                  <td><input type="text" class="form-control ILcstpo" name="ILcstpo" value="{{data1.Customer_PO}}" style="width:100px;"></td>
+                  <th>Primary UOM Code</th>
+                  <td>
+                    <select name="ILprimaryuomcode" id="ILprimaryuomcode" class="ILprimaryuomcode form-control" >
+                      <option value="">Select</option>
+                      {% for uc in duomcode %}
+                      <option value="{{uc.Code}}"{%ifequal data1.Primary_UOM_Code_id uc.Code%} selected {% endifequal %}>{{uc.Code}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <th>Quantity</th>
+                  <td> <input type="text" name="ILquantity" value="{{data1.Quantity|default:'0'}}" class="ILquantity form-control" style="width:100px;" > </td>
+                  <th>Inspection Require</th>
+                  <td><input type="checkbox" style="width:80px;" name="ILinrequire" {% ifequal data1.Inspection_Require "Y" %} checked {% endifequal %} value="1"> </td>
+                  <td><input type="hidden" name="ILinrequire" value="0"></td>
+                </tr>
+                <tr>
+
+                  <th>Discount Code1</th>
+                  <td> <input type="text" name="ILdiscode1" value="{{data1.Discount_Code1}}" class="form-control" style="width:100px;"> </td>
+                  <th>Discount Amount1</th>
+                  <td> <input type="text" name="ILdisamt1"  value="{{data1.Discount_Amount1|default:'0'}}" onfocusout="rowsumfun({{ forloop.counter|add:'-1' }});" class="ILdisamt1 form-control" style="width:100px;"> </td>
+                  <th>Discount Code2</th>
+                  <td> <input type="text" name="ILdiscode2" value="{{data1.Discount_Code2}}" class="form-control" style="width:100px;"> </td>
+                  <th>Discount Amount2</th>
+                  <td> <input type="text" name="ILdisamt2"  value="{{data1.Discount_Amount2|default:'0'}}" onfocusout="rowsumfun({{ forloop.counter|add:'-1' }});" class="ILdisamt2 form-control" style="width:100px;"> </td>
+                  <th>Discount Code3</th>
+                  <td> <input type="text" name="ILdiscode3" value="{{data1.Discount_Code3}}" class="form-control" style="width:100px;"> </td>
+                  <th>Discount Amount3</th>
+                  <td> <input type="text" name="ILdisamt3"  value="{{data1.Discount_Amount3|default:'0'}}" onfocusout="rowsumfun({{ forloop.counter|add:'-1' }});" class="ILdisamt3 form-control" style="width:100px;"> </td>
+                  <th>CnF Charges</th>
+                  <td> <input type="text" name="ILcnfcharge" value="{{data1.CnF_Charges|default:'0'}}" class="ILcnfcharge form-control" style="width:100px;" > </td>'
+                  <th>Freight Charges</th>
+                  <td> <input type="text" name="ILfrecharge" value="{{data1.Freight_Charges|default:'0'}}" class="ILfrecharge form-control" style="width:100px;" > </td>
+                </tr>
+                <tr>
+                  <th>HS Code</th>
+                  <td>
+                  <select class="form-control ILhscode" onclick="hscodefun({{ forloop.counter|add:'-1' }})" name="ILhscode" id="ILhscode">
+                    <option value="">Select</option>
+                    {% for dt2 in dhscode %}
+                    <option value="{{dt2.Code}}"{%ifequal data1.HS_Code_id uc.Code %} selected {% endifequal %}>{{dt2.Code}}</option>
+                    {% endfor %}
+                  </select>
+                  </td>
+                  <th>Tax Classification Code1</th>
+                  <td> <input type="text" name="ILtaxcod1" value="{{data1.Tax_Classification_Code1}}" class="ILtaxcod1 form-control" style="width:100px;"> </td>
+                  <th>Tax Amount1</th>
+                  <td> <input type="text" name="ILtaxamt1" value="{{data1.Tax_Amount1|default:'0'}}" class="ILtaxamt1 form-control" style="width:100px;"> </td>
+                  <th>Tax Classification Code2</th>
+                  <td> <input type="text" name="ILtaxcod2" value="{{data1.Tax_Classification_Code2}}" class="ILtaxcod2 form-control" style="width:100px;"> </td>
+                  <th>Tax Amount2</th>
+                  <td> <input type="text" name="ILtaxamt2" value="{{data1.Tax_Amount2|default:'0'}}" class="ILtaxamt2 form-control" style="width:100px;"> </td>
+                  <th>Tax Classification Code3</th>
+                  <td> <input type="text" name="ILtaxcod3" value="{{data1.Tax_Classification_Code3}}" class="ILtaxcod3 form-control" style="width:100px;"> </td>
+                  <th>Tax Amount3</th>
+                  <td> <input type="text" name="ILtaxamt3" value="{{data1.Tax_Amount3|default:'0'}}" class="ILtaxamt3 form-control" style="width:100px;"> </td>
+                  <th>Insurance Charges</th>
+                  <td> <input type="text" name="ILinscharge" value="{{data1.Insurance_Charges|default:'0'}}" class="ILinscharge form-control" style="width:100px;" > </td>
+
+                </tr>
+                <tr>
+                  <th>Customer Item code</th>
+                  <td> <input type="text" name="ILcstitemcode" value="{{data1.Customer_Item_code|default_if_none:""}}" class="form-control" style="width:100px;"> </td>
+                  <th>Subinventory Id</th>
+                  <td>
+                    <select name="ILsubinv" id="ILsubinv" class="ILsubinv form-control" style="width:95px;">
+                      <option value="None">Select</option>
+                      {% for uc in dslsubinv %}
+                      <option value="{{uc.Id}}" {%ifequal data1.Subinventory_Id_id uc.Id %} selected {% endifequal %}>{{uc.Subinventory_Name}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <th>Shipping Instruction</th>
+                  <td colspan="2"> <input type="text" name="ILshipinst" id="shipinst" value="{{data.Shipping_Instruction}}" class="form-control"> </td>
+                  <th>Locator Code</th>
+                  <td>
+                    <select name="ILloccode" id="ILloccode" class="ILloccode form-control">
+                      <option value="None">Select</option>
+                      {% for uc in dslloccode %}
+                      <option value="{{uc.Locator_Code}}" {%ifequal data1.Locator_Code_id uc.Locator_Code%} selected {% endifequal %}>{{uc.Locator_Code}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <th>Accounting Rule</th>
+                  <td> <input type="text" name="ILaccrules" value="{{data1.Accounting_Rule|default_if_none:""}}" class="form-control" style="width:100px;"> </td>
+                  <th>OU Organization Name</th>
+                  <td colspan="3">
+                  <select name="ILouorgid" id="ILouorgid" class="ILouorgid form-control" >
+                    <option value="">Select</option>
+                    {% for uc in douorgid %}
+                    <option value="{{uc.Organization_Id}}" {%ifequal data1.OU_Organization_Id_id uc.Organization_Id%} selected {% endifequal %}>{{uc.Organization_Name}}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                </tr>
+
+              </table>
+              <table border="1">
+                <tr>
+                <th>Price List Code</th>
+                <td colspan="2">
+                   <select name="ILpricelistcode" id="ILpricelistcode" onclick="pricelistfun({{ forloop.counter|add:'-1' }})"  class="ILpricelistcode form-control">
+                     <option value="">Select</option>
+                     {% for uc in dPriceListCode %}
+                     <option value="{{uc.Price_List_Code}}" index="{{uc.Currency_id}}" {%ifequal data1.Price_List_Code_id uc.Price_List_Code %} selected {% endifequal %}>{{uc.Price_List_Name}}</option>
+                     {% endfor %}
+                   </select>
+                 </td>
+                 <th>List Price</th>
+                 <td> <input type="text" name="ILlistprice" value="{{data1.List_Price|default:'0'}}" class="ILlistprice form-control" style="width:100px;" > </td>
+                 <th>Ship To Customer Name</th>
+                 <td colspan="2"> <input type="text" name="ILshipcstname" value="{{data1.Ship_To_Customer_Name}}" class="ILshipcstname form-control"> </td>
+                 <th>Ship To Address Code</th>
+                 <td>
+                   <select name="ILshipcstadd" id="ILshipcstadd" class="ILshipcstadd form-control">
+                     <option value="">Select</option>
+                     {% for uc in caddress2 %}
+                     <option value="{{uc.Id}}" {%ifequal data1.Ship_To_Address_Code_id uc.Id %} selected {% endifequal %}>{{uc.Customer_Site_Name}}</option>
+                     {% endfor %}
+                   </select>
+                 </td>
+
+                 <th>Remark</th>
+                 <td> <input type="text" name="ILremark" value="{{data1.Remark}}" class="form-control" > </td>
+                </tr>
+              </table>
+
+            </div>
+            {% empty %}
+            <tr>
+              <td><a class="btn btn-default downupbtn" role="button" data-toggle="collapse" onclick="downupbtnspanfun(0);" href="#collapseclass1" aria-expanded="false" aria-controls="collapseclass1">
+                <span id="downupbtnspan0" class="glyphicon glyphicon-arrow-down" target="0"  aria-hidden="true">
+              </a></td>
+              <td><input type="hidden" name="ILinvlineid"  class="ILinvlineid" value="0" ></td>
+              <td><input type="checkbox" name="ids" value="" style="width:30px;"></td>
+              <td><input type="text" class="form-control ILinvlineno siextra" name="ILinvlineno" value="1" style="width:70px;"></td>
+              <td>
+                <div class="input-group" style="width:160px">
+                  <input type="text" name="ILitemno" value="" id="ILitemno" class="ILitemno form-control siextra" style="width:120px;" onfocusout="itemsearchfun(0);" onkeypress="scanitemfun(event,0);" aria-describedby="itmxyz">
+                  <a data-toggle="modal" data-target="#myModal" onclick="indexfun1(0)" class="itmxyz" >
+                  <h4><span class="glyphicon glyphicon-option-horizontal" aria-hidden="true" ></span></h4></a>
+               </div>
+              </td>
+              <td><input type="text" class="itemdec form-control siextra" value=""></td>
+              <td>
+              <select name="ILinvorgid" id="ILinvorgid" class="ILinvorgid form-control siextra">
+                <option value="None">Select</option>
+                {% for uc in dinvorgid %}
+                <option value="{{uc.Organization_Id}}" {%ifequal dforinv uc.Organization_Id%} selected {% endifequal %}>{{uc.Organization_Name}}</option>
+                {% endfor %}
+              </select>
+              </td>
+            <td>
+              <select name="ILtrxuomcode" id="ILtrxuomcode" class="ILtrxuomcode form-control siextra" >
+                <option value="">Select</option>
+                {% for uc in duomcode %}
+                <option value="{{uc.Code}}">{{uc.Code}}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td> <input type="text" name="ILtrxquty" value="0"  class="ILtrxquty form-control siextra" onkeyup="totalfun(0);rowsumfun(0);" style="width:100px;" > </td>
+            <td> <input type="text" name="ILunitprice" value="0" class="ILunitprice form-control siextra" style="width:100px;" > </td>
+            <td> <input type="text" name="ILtranamount" value="0" class="ILtranamount form-control siextra" style="width:100px;" > </td>
+
+            </tr>
+          </table>
+          </div>
+            <div class="collapse" id="collapseclass1">
+
+              <table border="1">
+                <tr>
+                  <th>SO Number</th>
+                  <td>
+                    <select name="ILsono" id="ILsono" onfocusout="sonumberfun(0)" class="ILsono form-control siextra">
+                      <option value="">Select</option>
+                      {% for uc in dsono %}
+                      <option value="{{uc}}">{{uc}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <th>SO Line Number</th>
+                  <td>
+                    <select  name="ILsolineno" id="ILsolineno" onfocusout="solinefun(0)" class="ILsolineno form-control siextra" style="width:100px;">
+                      <option value="">Select</option>
+                    </select>
+                  </td>
+                  <th>Shipment Id</th>
+                  <td><input type="text" class="form-control ILshipid siextra" name="ILshipid" value="" style="width:100px;"></td>
+                  <th>Shipment Tran. No</th>
+                  <td><input type="text" class="form-control ILshiptranid siextra" name="ILshiptranid" value="" style="width:100px;"></td>
+                  <th>Customer PO</th>
+                  <td><input type="text" class="form-control ILcstpo siextra" name="ILcstpo" value="" style="width:100px;"></td>
+                  <th>Primary UOM Code</th>
+                  <td>
+                    <select name="ILprimaryuomcode" id="ILprimaryuomcode" class="ILprimaryuomcode form-control siextra" >
+                      <option value="">Select</option>
+                      {% for uc in duomcode %}
+                      <option value="{{uc.Code}}">{{uc.Code}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <th>Quantity</th>
+                  <td> <input type="text" name="ILquantity" value="0" class="ILquantity form-control siextra" style="width:100px;" > </td>
+                  <th>Inspection Require</th>
+                  <td><input type="checkbox" style="width:80px;" name="ILinrequire" value="1"> </td>
+                  <td><input type="hidden" name="ILinrequire" value="0"></td>
+                </tr>
+                <tr>
+
+                  <th>Discount Code1</th>
+                  <td> <input type="text" name="ILdiscode1" value="" class="form-control siextra" style="width:100px;"> </td>
+                  <th>Discount Amount1</th>
+                  <td> <input type="text" name="ILdisamt1"  value="0" onfocusout="rowsumfun(0)" class="ILdisamt1 form-control siextra" style="width:100px;"> </td>
+                  <th>Discount Code2</th>
+                  <td> <input type="text" name="ILdiscode2" value="" class="form-control siextra" style="width:100px;"> </td>
+                  <th>Discount Amount2</th>
+                  <td> <input type="text" name="ILdisamt2"  value="0" onfocusout="rowsumfun(0)" class="ILdisamt2 form-control siextra" style="width:100px;"> </td>
+                  <th>Discount Code3</th>
+                  <td> <input type="text" name="ILdiscode3" value="" class="form-control siextra" style="width:100px;"> </td>
+                  <th>Discount Amount3</th>
+                  <td> <input type="text" name="ILdisamt3"  value="0" onfocusout="rowsumfun(0)" class="ILdisamt3 form-control siextra" style="width:100px;"> </td>
+                  <th>CnF Charges</th>
+                  <td> <input type="text" name="ILcnfcharge" value="0" class="ILcnfcharge form-control siextra" style="width:100px;" > </td>'
+                  <th>Freight Charges</th>
+                  <td> <input type="text" name="ILfrecharge" value="0" class="ILfrecharge form-control siextra" style="width:100px;" > </td>
+                </tr>
+                <tr>
+                  <th>HS Code</th>
+                  <td>
+                  <select class="form-control ILhscode siextra" onclick="hscodefun(0)" name="ILhscode" id="ILhscode">
+                    <option value="">Select</option>
+                    {% for dt2 in dhscode %}
+                    <option value="{{dt2.Code}}">{{dt2.Code}}</option>
+                    {% endfor %}
+                  </select>
+                  </td>
+                  <th>Tax Classification Code1</th>
+                  <td> <input type="text" name="ILtaxcod1" value="" class="ILtaxcod1 form-control siextra" style="width:100px;"> </td>
+                  <th>Tax Amount1</th>
+                  <td> <input type="text" name="ILtaxamt1" value="0" class="ILtaxamt1 form-control siextra" style="width:100px;"> </td>
+                  <th>Tax Classification Code2</th>
+                  <td> <input type="text" name="ILtaxcod2" value="" class="ILtaxcod2 form-control siextra" style="width:100px;"> </td>
+                  <th>Tax Amount2</th>
+                  <td> <input type="text" name="ILtaxamt2" value="0" class="ILtaxamt2 form-control siextra" style="width:100px;"> </td>
+                  <th>Tax Classification Code3</th>
+                  <td> <input type="text" name="ILtaxcod3" value="" class="ILtaxcod3 form-control siextra" style="width:100px;"> </td>
+                  <th>Tax Amount3</th>
+                  <td> <input type="text" name="ILtaxamt3" value="0" class="ILtaxamt3 form-control siextra" style="width:100px;"> </td>
+                  <th>Insurance Charges</th>
+                  <td> <input type="text" name="ILinscharge" value="0" class="ILinscharge form-control siextra" style="width:100px;" > </td>
+
+                </tr>
+                <tr>
+                  <th>Customer Item code</th>
+                  <td> <input type="text" name="ILcstitemcode" value="" class="form-control siextra" style="width:100px;"> </td>
+                  <th>Subinventory Id</th>
+                  <td>
+                    <select name="ILsubinv" id="ILsubinv" class="ILsubinv form-control siextra" style="width:95px;">
+                      <option value="None">Select</option>
+                      {% for uc in dslsubinv %}
+                      <option value="{{uc.Id}}" >{{uc.Subinventory_Name}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <th>Shipping Instruction</th>
+                  <td colspan="2"> <input type="text" name="ILshipinst" id="shipinst" value="" class="form-control siextra"> </td>
+                  <th>Locator Code</th>
+                  <td>
+                    <select name="ILloccode" id="ILloccode" class="ILloccode form-control siextra">
+                      <option value="None">Select</option>
+                      {% for uc in dslloccode %}
+                      <option value="{{uc.Locator_Code}}" >{{uc.Locator_Code}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <th>Accounting Rule</th>
+                  <td> <input type="text" name="ILaccrules" value="" class="form-control siextra" style="width:100px;"> </td>
+                  <th>OU Organization Name</th>
+                  <td colspan="3">
+                  <select name="ILouorgid" id="ILouorgid" class="ILouorgid form-control siextra" >
+                    <option value="">Select</option>
+                    {% for uc in douorgid %}
+                    <option value="{{uc.Organization_Id}}" {%ifequal dhorou uc.Organization_Id%} selected {% endifequal %} >{{uc.Organization_Name}}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                </tr>
+
+              </table>
+              <table border="1">
+                <tr>
+                <th>Price List Code</th>
+                <td colspan="2">
+                   <select name="ILpricelistcode" id="ILpricelistcode" onclick="pricelistfun(0)"  class="ILpricelistcode form-control siextra">
+                     <option value="">Select</option>
+                     {% for uc in dPriceListCode %}
+                     <option value="{{uc.Price_List_Code}}" >{{uc.Price_List_Name}}</option>
+                     {% endfor %}
+                   </select>
+                 </td>
+                 <th>List Price</th>
+                 <td> <input type="text" name="ILlistprice" value="0" class="ILlistprice form-control siextra" style="width:100px;" > </td>
+                 <th>Ship To Customer Name</th>
+                 <td colspan="2"> <input type="text" name="ILshipcstname" value="" class="ILshipcstname form-control siextra"> </td>
+                 <th>Ship To Address Code</th>
+                 <td>
+                   <select name="ILshipcstadd" id="ILshipcstadd" class="ILshipcstadd form-control siextra">
+                     <option value="">Select</option>
+                     {% for uc in caddress2 %}
+                     <option value="{{uc.Id}}" >{{uc.Customer_Site_Name}}</option>
+                     {% endfor %}
+                   </select>
+                 </td>
+
+                 <th>Remark</th>
+                 <td> <input type="text" name="ILremark" value="" class="form-control siextra" > </td>
+                </tr>
+              </table>
+
+            </div>
+            {% endfor %}
+            </div>
+
+
+  </div>
+</div>
+</form>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+				<input type="text" id="seltxt" name="" value="">
+				<table border="1" class="table">
+					<tr>
+						<th>Item Number</th>
+						<th>Description</th>
+					</tr>
+					<tbody id="myTablesch">
+				{% for uc in ditemdata %}
+
+					<tr>
+						<td><a class="itemaa" data-dismiss="modal" >{{uc.Item_Number}}</a> </td>
+						<td id="ds{{uc.Item_Number}}">{{uc.Description}}</td>
+            <input type="hidden" id="hs{{uc.Item_Number}}" value="{{uc.HS_CODE_id}}">
+            <input type="hidden" id="{{uc.Item_Number}}" value="{{uc.Primary_UOM_Code_id}}">
+					</tr>
+
+
+				{% endfor %}
+				</tbody>
+					</table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="helpModalLabel">Sale Invoice</h4>
+      </div>
+      <p>A sales invoice can be simply defined as the request of payment by the customer for goods sold or services provided the seller. An invoice generally lists the description and the quantity of the item sold or service provided. The document is also a record of the sale for both the seller and the buyer.</p>
+    </div>
+  </div>
+</div>
+  <script type="text/javascript">
+
+
+    if('{{data}}'!='None' || '{{data1}}'!='None'){
+      $('.toolbarlogout').append(
+        '<button type="submit" name="print" id="print" class="toolbaricon" data-toggle="tooltip" title="Print" style="margin-right:3px;" ><img src="{% static "logo/Tool Bar/small_Print.jpg" %}" class="toolbarancher" ></button>'
+        )
+    }
+
+    if('{{data}}'!='None' && '{{data1}}'!='None' && '{{grant_data.Grant_Update}}'=='N'){
+            $("#save").remove()
+          }
+
+          if('{{data}}'=='None' && '{{data1}}'=='None' && '{{grant_data.Grant_Create}}'=='N'){
+            $("#save").remove()
+          }
+          if('{{grant_data.Grant_Delete}}'=='N'){
+            $('#delete').remove()
+          }
+          if('{{grant_data.Grant_View}}'=='N'){
+            $('#search').remove()
+          }
+
+    if('{{data}}'!='None' && '{{grant_data.Grant_Update}}'=='N'){
+            $("#save").remove()
+          }
+
+          if('{{data}}'=='None' && '{{grant_data.Grant_Create}}'=='N'){
+            $("#save").remove()
+          }
+          if('{{grant_data.Grant_Delete}}'=='N'){
+            $('#delete').remove()
+          }
+          if('{{grant_data.Grant_View}}'=='N'){
+            $('#search').remove()
+          }
+
+      if('{{data1}}'!='None'){
+        for(k=0;k<={{data1|length}};k++){
+          x = $('.ILitemno').eq(k).val()
+        {% for i in ditemdata %}
+        if(x=='{{i.Item_Number}}'){
+          $('.itemdec').eq(k).val('{{i.Description}}')
+        }
+        {% endfor %}
+      }
+
+      }
+      if('{{data}}'!='None' || '{{data1}}'!='None'){
+      $('#print').show()
+     }
+
+    if('{{sorou}}'!='0' && '{{data}}'=='None'){
+     $('#Ihouorgid').val('{{sorou}}')
+     defaultpricelist()
+   }
+   if('{{sorinv}}'!='0' && '{{data1}}'=='None'&& '{{data}}'!='None'){
+     $('#ILinvorgid').val('{{sorinv}}')
+   }
+
+
+    $('.siextra').prop('disabled',true)
+        $('#add').hide()
+        $('#add1').hide()
+        // $('#print').hide()
+        {% ifnotequal data None %}
+        $('.siextra').prop('disabled',false)
+        $('#add').show()
+        $('#add1').show()
+        samevaluefun(0)
+        {% endifnotequal %}
+
+
+  $(function() {
+    $('.targetheaderDiv').hide();
+    $('#headerinvoice1').show();
+    $('.showheaderSingle').click(function() {
+     $('.targetheaderDiv').hide();
+     $('#headerinvoice' + $(this).attr('target')).show();
+   });
+  });
+
+  var v=$('.ILinvlineid').length
+
+  $(document).ready(function() {
+      $('#add').click(function() {
+         $('#linesaleinvoice').append(
+       '<div class="lineinvoice1 removeclass">'+
+         '<table border="1">'+
+           '<tr>'+
+             '<td><a class="btn btn-default downupbtn" role="button" data-toggle="collapse" onclick="downupbtnspanfun('+v+');" href="#collapseclass'+(v+1)+'" aria-expanded="false" aria-controls="collapseclass'+(v+1)+'">'+
+               '<span id="downupbtnspan'+v+'" target="0" class="glyphicon glyphicon-arrow-down"  aria-hidden="true">'+
+             '</a></td>'+
+             '<td><input type="hidden" name="ILinvlineid" class="ILinvlineid" value="0"></td>'+
+             '<td><input type="checkbox" name="ids" value="" style="width:30px;"></td>'+
+             '<td><input type="text" class="form-control ILinvlineno" name="ILinvlineno" value="'+(v+1)+'" style="width:70px;"></td>'+
+             '<td>'+
+               '<div class="input-group" style="width:160px">'+
+                 '<input type="text" name="ILitemno" value="" id="ILitemno" class="ILitemno form-control" style="width:120px;" onfocusout="itemsearchfun('+v+');" onkeypress="scanitemfun(event,'+v+');" aria-describedby="itmxyz">'+
+                 '<a data-toggle="modal" data-target="#myModal" onclick="indexfun1('+v+')" class="itmxyz" >'+
+                 '<h4><span class="glyphicon glyphicon-option-horizontal" aria-hidden="true" ></span></h4></a>'+
+              '</div>'+
+             '</td>'+
+             '<td><input type="text" class="itemdec form-control" value=""></td>'+
+             '<td>'+
+            '<select name="ILinvorgid" id="ILinvorgid" class="ILinvorgid form-control">'+
+               '<option value="None">Select</option>'+
+               '{% for uc in dinvorgid %}'+
+               '<option value="{{uc.Organization_Id}}" {%ifequal dforinv uc.Organization_Id%} selected {% endifequal %} >{{uc.Organization_Name}}</option>'+
+               '{% endfor %}'+
+             '</select>'+
+             '</td>'+
+           '<td>'+
+             '<select name="ILtrxuomcode" id="ILtrxuomcode" class="ILtrxuomcode form-control" >'+
+               '<option value="">Select</option>'+
+               '{% for uc in duomcode %}'+
+               '<option value="{{uc.Code}}">{{uc.Code}}</option>'+
+               '{% endfor %}'+
+             '</select>'+
+           '</td>'+
+           '<td> <input type="text" name="ILtrxquty" value="0"  class="ILtrxquty form-control" onkeyup="totalfun('+v+'); rowsumfun('+v+');"  style="width:100px;" > </td>'+
+           '<td> <input type="text" name="ILunitprice" value="0" class="ILunitprice form-control" style="width:100px;" > </td>'+
+           '<td> <input type="text" name="ILtranamount" value="0" class="ILtranamount form-control" style="width:100px;" > </td>'+
+           '</tr>'+
+         '</table>'+
+         '</div>'+
+         '<div class="collapse" id="collapseclass'+(v+1)+'">'+
+           '<table border="1">'+
+             '<tr>'+
+               '<th>SO Number</th>'+
+               '<td>'+
+                 '<select name="ILsono" id="ILsono" onfocusout="sonumberfun('+v+')" class="ILsono form-control siextra">'+
+                   '<option value="">Select</option>'+
+                   '{% for uc in dsono %}'+
+                   '<option value="{{uc}}">{{uc}}</option>'+
+                   '{% endfor %}'+
+                 '</select>'+
+               '</td>'+
+               '<th>SO Line Number</th>'+
+               '<td>'+
+                 '<select  name="ILsolineno" id="ILsolineno" onfocusout="solinefun('+v+')" class="ILsolineno form-control siextra" style="width:100px;">'+
+                   '<option value="">Select</option>'+
+                 '</select>'+
+               '</td>'+
+               '<th>Shipment Id</th>'+
+               '<td><input type="text" class="form-control ILshipid" name="ILshipid" value="" style="width:100px;"></td>'+
+               '<th>Shipment Tran. No</th>'+
+               '<td><input type="text" class="form-control ILshiptranid" name="ILshiptranid" value="" style="width:100px;"></td>'+
+               '<th>Customer PO</th>'+
+               '<td><input type="text" class="form-control ILcstpo" name="ILcstpo" value="" style="width:100px;"></td>'+
+               '<th>Primary UOM Code</th>'+
+               '<td>'+
+                 '<select name="ILprimaryuomcode" id="ILprimaryuomcode" class="ILprimaryuomcode form-control" >'+
+                   '<option value="">Select</option>'+
+                   '{% for uc in duomcode %}'+
+                   '<option value="{{uc.Code}}">{{uc.Code}}</option>'+
+                   '{% endfor %}'+
+                 '</select>'+
+               '</td>'+
+               '<th>Quantity</th>'+
+               '<td> <input type="text" name="ILquantity" value="0" class="ILquantity form-control" style="width:100px;" > </td>'+
+               '<th>Inspection Require</th>'+
+               '<td><input type="checkbox" style="width:80px;" name="ILinrequire" value="1"> </td>'+
+               '<td><input type="hidden" name="ILinrequire" value="0"></td>'+
+             '</tr>'+
+             '<tr>'+
+               '<th>Discount Code1</th>'+
+               '<td> <input type="text" name="ILdiscode1" value="" class="form-control" style="width:100px;"> </td>'+
+               '<th>Discount Amount1</th>'+
+               '<td> <input type="text" name="ILdisamt1"  value="0" onfocusout="rowsumfun('+v+');" class="ILdisamt1 form-control" style="width:100px;"> </td>'+
+               '<th>Discount Code2</th>'+
+               '<td> <input type="text" name="ILdiscode2" value="" class="form-control" style="width:100px;"> </td>'+
+               '<th>Discount Amount2</th>'+
+               '<td> <input type="text" name="ILdisamt2"  value="0" onfocusout="rowsumfun('+v+');" class="ILdisamt2 form-control" style="width:100px;"> </td>'+
+               '<th>Discount Code3</th>'+
+               '<td> <input type="text" name="ILdiscode3" value="" class="form-control" style="width:100px;"> </td>'+
+               '<th>Discount Amount3</th>'+
+               '<td> <input type="text" name="ILdisamt3"  value="0" onfocusout="rowsumfun('+v+');" class="ILdisamt3 form-control" style="width:100px;"> </td>'+
+               '<th>CnF Charges</th>'+
+               '<td> <input type="text" name="ILcnfcharge" value="0" class="ILcnfcharge form-control" style="width:100px;" > </td>'+
+               '<th>Freight Charges</th>'+
+               '<td> <input type="text" name="ILfrecharge" value="0" class="ILfrecharge form-control" style="width:100px;" > </td>'+
+             '</tr>'+
+             '<tr>'+
+               '<th>HS Code</th>'+
+               '<td>'+
+               '<select class="form-control ILhscode" onclick="hscodefun('+v+')" name="ILhscode" id="ILhscode">'+
+                 '<option value="">Select</option>'+
+                 '{% for dt2 in dhscode %}'+
+                 '<option value="{{dt2.Code}}">{{dt2.Code}}</option>'+
+                 '{% endfor %}'+
+               '</select>'+
+               '</td>'+
+               '<th>Tax Classification Code1</th>'+
+               '<td> <input type="text" name="ILtaxcod1" value="" class="ILtaxcod1 form-control" style="width:100px;"> </td>'+
+               '<th>Tax Amount1</th>'+
+               '<td> <input type="text" name="ILtaxamt1" value="0" class="ILtaxamt1 form-control" style="width:100px;"> </td>'+
+               '<th>Tax Classification Code2</th>'+
+               '<td> <input type="text" name="ILtaxcod2" value="" class="ILtaxcod2 form-control" style="width:100px;"> </td>'+
+               '<th>Tax Amount2</th>'+
+               '<td> <input type="text" name="ILtaxamt2" value="0" class="ILtaxamt2 form-control" style="width:100px;"> </td>'+
+               '<th>Tax Classification Code3</th>'+
+               '<td> <input type="text" name="ILtaxcod3" value="" class="ILtaxcod3 form-control" style="width:100px;"> </td>'+
+               '<th>Tax Amount3</th>'+
+               '<td> <input type="text" name="ILtaxamt3" value="0" class="ILtaxamt3 form-control" style="width:100px;"> </td>'+
+               '<th>Insurance Charges</th>'+
+               '<td> <input type="text" name="ILinscharge" value="0" class="ILinscharge form-control" style="width:100px;" > </td>'+
+             '</tr>'+
+             '<tr>'+
+               '<th>Customer Item code</th>'+
+               '<td> <input type="text" name="ILcstitemcode" value="" class="form-control" style="width:100px;"> </td>'+
+               '<th>Subinventory Id</th>'+
+              ' <td>'+
+                 '<select name="ILsubinv" id="ILsubinv" class="ILsubinv form-control" style="width:95px;">'+
+                   '<option value="None">Select</option>'+
+                   '{% for uc in dslsubinv %}'+
+                   '<option value="{{uc.Id}}" >{{uc.Subinventory_Name}}</option>'+
+                   '{% endfor %}'+
+                 '</select>'+
+               '</td>'+
+               '<th>Shipping Instruction</th>'+
+               '<td colspan="2"> <input type="text" name="ILshipinst" id="shipinst" value="" class="form-control"> </td>'+
+               '<th>Locator Code</th>'+
+               '<td>'+
+                 '<select name="ILloccode" id="ILloccode" class="ILloccode form-control">'+
+                   '<option value="None">Select</option>'+
+                   '{% for uc in dslloccode %}'+
+                   '<option value="{{uc.Locator_Code}}" >{{uc.Locator_Code}}</option>'+
+                  ' {% endfor %}'+
+                 '</select>'+
+               '</td>'+
+               '<th>Accounting Rule</th>'+
+               '<td> <input type="text" name="ILaccrules" value="" class="form-control" style="width:100px;"> </td>'+
+               '<th>OU Organization Name</th>'+
+               '<td colspan="3">'+
+               '<select name="ILouorgid" id="ILouorgid" class="ILouorgid form-control" >'+
+                 '<option value="">Select</option>'+
+                 '{% for uc in douorgid %}'+
+                 '<option value="{{uc.Organization_Id}}" {%ifequal dhorou uc.Organization_Id%} selected {% endifequal %}>{{uc.Organization_Name}}</option>'+
+                 '{% endfor %}'+
+               '</select>'+
+             '</td>'+
+             '</tr>'+
+           '</table>'+
+           '<table border="1">'+
+             '<tr>'+
+             '<th>Price List Code</th>'+
+             '<td colspan="2">'+
+                '<select name="ILpricelistcode" id="ILpricelistcode" onclick="pricelistfun('+v+')"  class="ILpricelistcode form-control">'+
+                  '<option value="">Select</option>'+
+                  '{% for uc in dPriceListCode %}'+
+                  '<option value="{{uc.Price_List_Code}}" >{{uc.Price_List_Name}}</option>'+
+                  '{% endfor %}'+
+                '</select>'+
+              '</td>'+
+              '<th>List Price</th>'+
+              '<td> <input type="text" name="ILlistprice" value="0" class="ILlistprice form-control" style="width:100px;" > </td>'+
+              '<th>Ship To Customer Name</th>'+
+              '<td colspan="2"> <input type="text" name="ILshipcstname" value="" class="ILshipcstname form-control"> </td>'+
+              '<th>Ship To Address Code</th>'+
+              '<td>'+
+                '<select name="ILshipcstadd" id="ILshipcstadd" class="ILshipcstadd form-control">'+
+                  '<option value="">Select</option>'+
+                  '{% for uc in caddress2 %}'+
+                  '<option value="{{uc.Id}}" >{{uc.Customer_Site_Name}}</option>'+
+                  '{% endfor %}'+
+                '</select>'+
+              '</td>'+
+              '<th>Remark</th>'+
+              '<td> <input type="text" name="ILremark" value="" class="form-control" > </td>'+
+             '</tr>'+
+           '</table>'+
+         '</div>'
+           );
+           samevaluefun(v)
+           $('.ILinvorgid').eq(v).val('{{sorinv}}')
+           v++
+         });
+       });
+
+
+  function samevaluefun(x){
+    $('.ILcstpo').eq(x).val($('#incstpo').val())
+    $('.ILouorgid').eq(x).val($('#Ihouorgid').val())
+    $('.ILpricelistcode').eq(x).val($('#inPriceListCode').val())
+    $('.ILshipcstname').eq(x).val($('#inshipcstname').val())
+    $('.ILshipcstadd').eq(x).val($('#inshipcstadd').val())
+ }
+
+
+      function downupbtnspanfun(e){
+        if ($('#downupbtnspan'+e).attr('target')==0) {
+          $('#downupbtnspan'+e).attr('target',1)
+          $('#downupbtnspan'+e).removeClass();
+          $('#downupbtnspan'+e).addClass('glyphicon glyphicon-arrow-up')
+        }
+        else{
+          $('#downupbtnspan'+e).attr('target',0)
+          $('#downupbtnspan'+e).attr('class', 'glyphicon glyphicon-arrow-down');
+        }
+
+
+
+      }
+
+       $(document).ready(function(){
+            $("#Ihouorgid").on("focusout", function() {
+            $('#incurrency').val($(this).find(":selected").attr('index'))
+            $('#incurrrate').val("1")
+            });
+            });
+
+            $(document).ready(function(){
+             $("#incurrtype").on("focusout", function() {
+               x1 = $("#Ihouorgid").find(":selected").attr('index')
+               x2 = $('#incurrency').val()
+               x3 = $('#incurrdate').val()
+               x4 = $('#incurrtype').val()
+               {% for i in dtcurcon %}
+               if(x1=='{{i.Currency_From_id}}' && x2=='{{i.Currency_To_id}}' && x4=='{{i.Rate_Type_id}}'){
+
+                 $('#incurrrate').val("{{i.Rate}}")
+               }
+
+               {% endfor %}
+             });
+             });
+
+
+
+
+       var cc =0
+       function indexfun1(e) {
+         cc = e
+       }
+
+       function totalfun(e) {
+    $('.ILtrxquty').keyup(function(){
+      var $id1 = $('.ILtrxuomcode').eq(e).val();
+      var $id2 = $('.ILprimaryuomcode').eq(e).val();
+      var $x1 = $('.ILunitprice').eq(e).val();
+      var cnf=0; tqty=parseFloat($('.ILtrxquty').eq(e).val());
+
+   {% for uomc in cnvrft %}
+     if($id1 == '{{uomc.To_UOM_Code_id}}' && $id2 == '{{uomc.From_UOM_Code_id}}')
+     {
+      cnf=('{{uomc.Conversion_Factor}}'*tqty);
+       $('.ILquantity').eq(e).val(cnf)
+       $('.ILtranamount').eq(e).val(tqty*$x1)
+     }
+     else if ($id2 == '{{uomc.To_UOM_Code_id}}' && $id1 == '{{uomc.From_UOM_Code_id}}') {
+      cnf=(tqty/'{{uomc.Conversion_Factor}}');
+       $('.ILquantity').eq(e).val(cnf)
+      $('.ILtranamount').eq(e).val(tqty*$x1)
+     }
+     else{
+       $('.ILquantity').eq(e).val(tqty)
+       $('.ILtranamount').eq(e).val(tqty*$x1)
+     }
+     {{ break }}
+   {% endfor %}
+  });
+   }
+
+       function rowsumfun(e) {
+         var d1 = parseFloat($('.ILdisamt1').eq(e).val())
+         var d2 = parseFloat($('.ILdisamt2').eq(e).val())
+         var d3 = parseFloat($('.ILdisamt3').eq(e).val())
+         lp = $('.ILlistprice').eq(e).val()
+         $('.ILunitprice').eq(e).val(lp-(d1+d2+d3))
+         var $x1 = $('.ILunitprice').eq(e).val();
+           tqty=parseFloat($('.ILtrxquty').eq(e).val());
+           $('.ILtranamount').eq(e).val(tqty*$x1)
+           hscodefun(e)
+       }
+
+    function pricelistfun(e) {
+    var id1 = $('.ILpricelistcode').eq(e).val()
+    var id2 = $('.ILitemno').eq(e).val()
+    var id3 = $('.ILprimaryuomcode').eq(e).val()
+    var id4 = $('#incurrency').val()
+    var id5 = $(".ILpricelistcode").eq(e).find(":selected").attr('index')
+    var id6 = $('#incurrtype').val()
+    var r1 = 1;
+    var up = 0; lp=0;
+
+
+    {% for i in dtcurcon %}
+    if(id5=='{{i.Currency_From_id}}' && id4=='{{i.Currency_To_id}}' && id6=='{{i.Rate_Type_id}}'){
+      r1={{i.Rate}}
+    }
+    {% endfor %}
+
+    {% for uk in dtpricedetail %}
+    if(id1=='{{uk.Price_List_Code}}' && id2=='{{uk.Item_Number_id}}')
+    {
+      up = {{uk.List_Price}}
+      var id4 = '{{uk.UOM_Code_id}}'
+
+      {% for uomc in cnvrft %}
+        if(id4=='{{uomc.To_UOM_Code_id}}' && id3=='{{uomc.From_UOM_Code_id}}')
+        {
+          lp = (up*{{uomc.Conversion_Factor}})*r1
+        }
+        else if (id3=='{{uomc.To_UOM_Code_id}}' && id4=='{{uomc.From_UOM_Code_id}}') {
+         lp = (up/ {{uomc.Conversion_Factor}})*r1
+        }
+        else if(id3==id4){
+          lp = up*r1
+        }
+        $('.ILlistprice').eq(e).val(lp)
+
+
+      {% endfor %}
+    }
+    {% endfor %}
+    rowsumfun(e)
+}
+
+ $(function() {
+ $('.itemaa').click(function() {
+   var k = $(this).text();
+   var k1 = $('#'+k).val()
+   var k2 = $('#hs'+k).val()
+   var k3 = $('#ds'+k).text()
+   if (cc==-1){
+     $('#inPriceListCode').val(k)
+   }
+   else{
+  $('.ILitemno').eq(cc).val(k)
+  $('.ILprimaryuomcode').eq(cc).val(k1)
+  $('.ILtrxuomcode').eq(cc).val(k1)
+  $('.ILhscode').eq(cc).val(k2)
+  $('.itemdec').eq(cc).val(k3)
+  pricelistfun(cc)
+  }
+});
+});
+function hscodefun(e){
+      var x = $('.ILhscode').eq(e).val()
+      {% for i in dthscode %}
+      if(x=='{{i.HS_code}}'){
+        $('.ILtaxcod1').eq(e).val('{{i.Tax_code1}}')
+        $('.ILtaxcod2').eq(e).val('{{i.Tax_code2}}')
+        $('.ILtaxcod3').eq(e).val('{{i.Tax_code3}}')
+      }
+      {% endfor %}
+      taxcal(e)
+    }
+
+    function taxcal(e) {
+  up = parseFloat($('.ILunitprice').eq(e).val())
+  x1 = $('.ILtaxcod1').eq(e).val()
+  x2 = $('.ILtaxcod2').eq(e).val()
+  x3 = $('.ILtaxcod3').eq(e).val()
+  {% for i in dttaxrate %}
+  if(x1=='{{i.Tax_code}}'){
+    $('.ILtaxamt1').eq(e).val({{i.Tax_Rate}}*up/100)
+  }
+  if(x2=='{{i.Tax_code}}'){
+    $('.ILtaxamt2').eq(e).val({{i.Tax_Rate}}*up/100)
+  }
+  if(x3=='{{i.Tax_code}}'){
+    $('.ILtaxamt3').eq(e).val({{i.Tax_Rate}}*up/100)
+  }
+
+  {% endfor %}
+}
+
+
+
+function sonumberfun(e)
+        {
+            x1 = $('.ILsono').eq(e).val()
+            $('.ILsolineno').eq(e).empty()
+            $('.ILsolineno').eq(e).append('<option value="">Select</option>')
+         {% for i in dsoshipment %}
+         if(x1=='{{i.SO_Number}}'){
+           $('.ILsolineno').eq(e).append('<option value="{{i.SO_Line_Number}}">{{i.SO_Line_Number}}</option>')
+         }
+
+          {% endfor %}
+     	 }
+       function solinefun(e){
+         x1 = $('.ILsono').eq(e).val()
+         x2 =   $('.ILsolineno').eq(e).val()
+         {% for i in dsoshipment %}
+         if(x1=='{{i.SO_Number}}' && x2=='{{i.SO_Line_Number}}')
+         {
+           $('.ILshipid').eq(e).val('{{i.Shipment_Id}}')
+           $('.ILshiptranid').eq(e).val('{{i.Shipment_Transaction_No}}')
+           $('.ILitemno').eq(e).val('{{i.Item_Number}}')
+           $('.ILouorgid').eq(e).val('{{i.OU_Organization_Id_id}}')
+           $('.ILinvorgid').eq(e).val('{{i.INV_Organization_Id_id}}')
+           $('.ILsubinv').eq(e).val('{{i.Subinventory_Id_id}}')
+           $('.ILloccode').eq(e).val('{{i.Locator_Code_id}}')
+           $('.ILtrxuomcode').eq(e).val('{{i.TRX_UOM_Code_id}}')
+           $('.ILtrxquan').eq(e).val('{{i.TRX_Quantity}}')
+           $('.ILprimaryuomcode').eq(e).val('{{i.Primary_UOM_Code_id}}')
+           $('.ILquantity').eq(e).val('{{i.Quantity}}')
+
+         }
+         {% endfor %}
+         itemsearchfun(e)
+       }
+function defaultpricelist(){
+  x1=$('#Ihouorgid').val()
+  for(i=0;i<={{dPriceListCode|length}};i++){
+  {% for j in dPriceListCode %}
+  if(x1=='{{j.Organization_Id_id}}'){
+    $('#inPriceListCode').val('{{j.Price_List_Code}}')
+    break;
+  }
+
+  {% endfor %}
+  }
+
+}
+
+
+
+       $(document).ready(function() {
+                $('#add1').click(function() {
+                  z1=$('.removeclass').length
+                   $('.removeclass').eq(z1-1).remove()
+                   if(v>1){
+                     v--
+                   }
+
+               });
+               });
+
+               $('#delete').click(function(){
+                           var checkstr =  confirm('are you sure you want to delete this?');
+                           if(checkstr == true){
+                             // do your code
+                           }else{
+                           return false;
+                           }
+                           });
+
+           $('#save').click(function(){
+                 $('#ulerror').empty()
+                 f=false
+                 f=validatcheck()
+                 {% ifnotequal data None %}
+                 f=validatcheck1()
+                 {% endifnotequal %}
+                 return f
+                 });
+
+
+                 function validatcheck(){
+                   ouorgid = $('#Ihouorgid').val()
+                   intype = $('#intype').val()
+                   instatus = $('#instatus').val()
+                   incurrency = $('#incurrency').val()
+                   InSalesPerson = $('#InSalesPerson').val()
+                   indate = $('#indate').val()
+                   e=false
+                   if (ouorgid=="" || intype=="" || instatus=="" || incurrency=="" || InSalesPerson=="" || indate=="")
+                   {
+                   if (ouorgid==""){
+                     $('#ulerror').append('<li>&diams;&nbsp; Enter OU Organization Name</li>')
+                   }
+                   if (intype==""){
+                     $('#ulerror').append('<li>&diams;&nbsp;Enter Invoice Type</li>')
+                   }
+                   if (instatus==""){
+                     $('#ulerror').append('<li>&diams;&nbsp;Enter Invoice Status</li>')
+                   }
+                   if (incurrency==""){
+                     $('#ulerror').append('<li>&diams;&nbsp;Enter Currency</li>')
+                   }
+                   if (InSalesPerson==""){
+                     $('#ulerror').append('<li>&diams;&nbsp;Enter Sales Person</li>')
+                   }
+                   if (indate==""){
+                     $('#ulerror').append('<li>&diams;&nbsp;Enter Invoice Date</li>')
+                   }
+                 }
+                 else{
+                     e= true
+                   }
+                   return e
+                 }
+
+                 function validatcheck1(){
+                   e=false
+                   chl=0
+                   x = $('.ILitemno').length
+                   for(i=0;i<x;i++){
+                     ILouorgid = $('.ILouorgid').eq(i).val()
+                     ILprimaryuomcode = $('.ILprimaryuomcode').eq(i).val()
+                     ILtrxuomcode = $('.ILtrxuomcode').eq(i).val()
+                     ILtrxquty = $('.ILtrxquty').eq(i).val()
+                     ILquantity = $('.ILquantity').eq(i).val()
+                     ILperson = $('.ILperson').eq(i).val()
+                     ILlistprice = $('.ILlistprice').eq(i).val()
+                     z1=i+1
+                     if (ILouorgid=="" || ILprimaryuomcode=="" || ILtrxuomcode=="" || ILtrxquty=="" || ILquantity=="" || ILperson=="" || ILlistprice==""){
+                       $('#ulerror').append('<ul id="dt'+i+'" class="">Line '+z1+'</ul>')
+                     if (ILouorgid==""){
+                       $('#dt'+i+'').append('<li>&diams;&nbsp;Enter OU Organization Name</li>')
+                     }
+                     if (ILprimaryuomcode==""){
+                       $('#dt'+i+'').append('<li>&diams;&nbsp;Enter Primary UOM Code</li>')
+                     }
+                     if (ILtrxuomcode==""){
+                       $('#dt'+i+'').append('<li>&diams;&nbsp;Enter TRX UOM Code</li>')
+                     }
+                     if (ILtrxquty==""){
+                       $('#dt'+i+'').append('<li>&diams;&nbsp;Enter TRX Quantity</li>')
+                     }
+                     if (ILquantity==""){
+                       $('#dt'+i+'').append('<li>&diams;&nbsp;Enter Quantity</li>')
+                     }
+                     if (ILperson==""){
+                       $('#dt'+i+'').append('<li>&diams;&nbsp;Enter Sales Person</li>')
+                     }
+                     if (ILlistprice==""){
+                       $('#dt'+i+'').append('<li>&diams;&nbsp;Enter LIst Price</li>')
+                     }
+                     chl++
+                   }
+
+                   }
+                   if(chl==0)
+                   e=true
+
+                   return e
+                 }
+
+      function scanitemfun(event,k){
+        var key = event.which;
+        if (key == 13) // the enter key code
+        {
+          $('#add').click();
+          $('.ILitemno').eq((k+1)).focus()
+          return false
+        }
+        return false
+      }
+
+      function itemsearchfun(e){
+        x = $('.ILitemno').eq(e).val()
+        {% for i in ditemdata %}
+        if(x=='{{i.Item_Number}}'){
+          $('.ILprimaryuomcode').eq(e).val('{{i.Primary_UOM_Code_id}}')
+          $('.ILtrxuomcode').eq(e).val('{{i.Primary_UOM_Code_id}}')
+          $('.ILhscode').eq(e).val('{{i.HS_CODE_id}}')
+          $('.itemdec').eq(e).val('{{i.Description}}')
+        }
+        {% endfor %}
+        pricelistfun(e)
+      }
+
+      $('#formsaleinvoice').keypress(function(e) {
+		    var key = e.which;
+		    if (key == 13) // the enter key code
+		    {
+
+		      return false;
+		    }
+		  });
+
+</script>
+
+{% endblock %}

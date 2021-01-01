@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load qr_code %}
+{% block content %}
+<form class="form-inline" method="post" id="formsaleinvoice">
+  {% include "toolbar.html" %}
+<div class="jumbotron">
+  <div class="container">
+    <h4 class="headingtag">Generate BarCode</h4>
+    <ul id="ulerror">
+
+    </ul>
+
+      {% csrf_token %}
+
+  <div class="table" style="overflow-y:scroll">
+    <div class="">
+      <label style="margin-left:300px;">Select All</label>
+      <input type="checkbox"  name="slctall"  onclick="toggle(this);" style="margin-left:15px;">
+<!-- {% qr_from_text "Hello World!" size=8 border=2 image_format="png" %} -->
+  <table class="table mrg" border="1" style="width:35%; margin-left: 30px;">
+<br>
+    <tr>
+      <th>Item Number</th>
+      <th>List Price</th>
+      <th></th>
+
+  </tr>
+
+      {% for uc in ditemdata %}
+  <tr>
+     <td>{{uc.Item_Number}}</td>
+      <td>{{uc.LIST_PRICE}}</td>
+      <td><input type="checkbox"  name="forqr" id="forqr" value="{{uc.Item_Number}}"></td>
+    </tr>
+
+    {% endfor %}
+  </table>
+
+    <input type="submit" name="print" value="Print" style="margin-left:380px;">
+
+
+</div>
+
+</form>
+
+  <script type="text/javascript">
+    function toggle(source) {
+      var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      for (var i = 0; i < checkboxes.length; i++) {
+          if (checkboxes[i] != source)
+              checkboxes[i].checked = source.checked;
+            }
+        }
+
+
+
+</script>
+
+
+{% endblock %}

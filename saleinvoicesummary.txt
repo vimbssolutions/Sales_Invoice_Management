@@ -1,0 +1,29 @@
+create view sale_invoice_summery_v as
+select Invoice_Line_id, sil.Invoice_id, SO_Line_Number, Shipment_Id, Shipment_Transaction_No, Invoice_Line_Number, sil.Customer_PO, sil.Invoice_Date, sil.Item_Number, TRX_Quantity, Quantity, sil.List_Price, Accounting_Rule, Transaction_Amount, Inspection_Require, Customer_Item_code, Discount_Code1, Discount_Amount1, Discount_Code2, Discount_Amount2, Discount_Code3, Discount_Amount3, Unit_Price, Freight_Charges, Insurance_Charges, CnF_Charges, Tax_Classification_Code1, Tax_Amount1, Tax_Classification_Code2, Tax_Amount2, Tax_Classification_Code3, Tax_Amount3, sil.Ship_To_Customer_Name, Shipping_Instruction, sil.Remark as Line_Remarks, sil.HS_CODE, sil.INV_Organization_Id, Locator_Code, sil.OU_Organization_Id, sil.Price_List_Code, sil.Primary_UOM_Code, sil.Ship_To_Address_Code ,Subinventory_Name, TRX_UOM_Code, SO_Number
+,Invoice_Number, Customer_Name, Bill_To_Customer_Name, Curr_Conv_date, Curr_Conv_Rate, sih.Remark as Header_Remarks, sih.Bill_To_Address_Code, Curr_Conv_Type, sih.Currency, sih.Customer_Address_Code, sih.Customer_Code, Invoice_Status, Invoice_Type, Payment_Method, sih.Payment_Term, sih.Sales_Channel, Sales_Person,
+item_master.Description as Item_Description,o1.Organization_Name as OU_Organization_Name, o2.Organization_Name as INV_Organization_Name,
+A1.Addresee as Address_c, A1.Address_Line1 as Address_Line1_c, A1.Address_Line2 as Address_Line2_c, A1.Address_Line3 as Address_Line3_c, A1.Country as Country_c, A1.County as County_c, A1.City as City_c, A1.ZIP as ZIP_c, A1.District as District_c, A1.State as State_c,
+A2.Addresee as Address_s, A2.Address_Line1 as Address_Line1_s, A2.Address_Line2 as Address_Line2_s, A2.Address_Line3 as Address_Line3_s, A2.Country as Country_s, A2.County as County_s, A2.City as City_s, A2.ZIP as ZIP_s, A2.District as District_s, A2.State as State_s,
+A3.Addresee as Address_b, A3.Address_Line1 as Address_Line1_b, A3.Address_Line2 as Address_Line2_b, A3.Address_Line3 as Address_Line3_b, A3.Country as Country_b, A3.County as County_b, A3.City as City_b, A3.ZIP as ZIP_b, A3.District as District_b, A3.State as State_b,
+A4.Addresee as Address_o, A4.Address_Line1 as Address_Line1_o, A4.Address_Line2 as Address_Line2_o, A4.Address_Line3 as Address_Line3_o, A4.Country as Country_o, A4.County as County_o, A4.City as City_o, A4.ZIP as ZIP_o, A4.District as District_o, A4.State as State_o,
+e1.Employee_FirstName as Employee_FirstName_sp, e1.Employee_LastName as Employee_LastName_sp, e1.Email as Email_sp, e1.Contact_No as Contact_No_sp,
+ct1.Phone1 as Phone1_b1,ct1.Phone2 as Phone2_b1,ct1.Mobile1 as Mobile1_b1,ct1.Mobile2 as Mobile2_b1,ct2.Phone1 as Phone1_b2,ct2.Phone2 as Phone2_b2,ct2.Mobile1 as Mobile1_b2,ct2.Mobile2 as Mobile2_b2,
+ct3.Phone1 as Phone1_o1,ct3.Phone2 as Phone2_o1,ct3.Mobile1 as Mobile1_o1,ct3.Mobile2 as Mobile2_o1,ct4.Phone1 as Phone1_o2,ct4.Phone2 as Phone2_o2,ct4.Mobile1 as Mobile1_o2,ct4.Mobile2 as Mobile2_o2
+
+from Sales_Invoice_Line as sil
+left join Sales_Invoice_Header sih on sih.Invoice_id=sil.Invoice_id
+left join item_master on item_master.Item_Number=sil.Item_Number
+left join common_organization o1 on o1.Organization_Id=sil.OU_Organization_Id
+left join common_organization o2 on o2.Organization_Id=sil.INV_Organization_Id
+left join common_subinventory on common_subinventory.Id=sil.Subinventory_Id
+left join customer_address c1 on  c1.Id = sil.Ship_To_Address_Code
+left join customer_address c2 on  c2.Id = sih.Bill_To_Address_Code
+left join common_address A1 on A1.Address_Code=sih.Customer_Address_Code
+left join common_address A2 on A2.Address_Code=c1.Address_Code
+left join common_address A3 on A3.Address_Code=c2.Address_Code
+left join common_address A4 on A4.Address_Code=o1.Address_Code
+left join employee_master e1 on  e1.Employee_Code = sih.Sales_Person
+left join Common_Contacts ct1 on ct1.Contact_Id = A3.Contact_Id1
+left join Common_Contacts ct2 on ct2.Contact_Id = A3.Contact_Id2
+left join Common_Contacts ct3 on ct1.Contact_Id = A4.Contact_Id1
+left join Common_Contacts ct4 on ct2.Contact_Id = A4.Contact_Id2

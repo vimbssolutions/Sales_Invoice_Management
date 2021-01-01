@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <form class="" method="post">
+      {% csrf_token %}
+      <table>
+        <tr>
+          <th>BG Organization Name</th>
+          <td>
+            <select name="dforbg" id="dforbg" class="form-control" id="orbg">
+              <option value="">Select</option>
+              {% for uc in dfbg %}
+              <option value="{{uc.Organization_Id}}">{{uc.Organization_Name}}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>OU Organization Name</th>
+          <td>
+            <select name="dforou" id="dforou" class="form-control" id="orou">
+              <option value="">Select</option>
+              {% for uc in dfou %}
+              <option value="{{uc.Organization_Id}}">{{uc.Organization_Name}}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>LE Organization Name</th>
+          <td>
+            <select name="dforle" id="dforle" class="form-control" id="orle">
+              <option value="">Select</option>
+              {% for uc in dfle %}
+              <option value="{{uc.Organization_Id}}">{{uc.Organization_Name}}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>INV Organization Name</th>
+          <td>
+            <select name="dforinv" id="dforinv" class="form-control" id="orinv">
+              <option value="">Select</option>
+              {% for uc in dfinv %}
+              <option value="{{uc.Organization_Id}}">{{uc.Organization_Name}}</option>
+              {% endfor %}
+            </select>
+          </td>
+
+        </tr>
+
+
+      </table>
+      <input type="submit" name="" value="submit">
+    </form>
+
+  </div>
+
+</div>
+
+  <script type="text/javascript">
+  $('#dforbg').change(function(){
+    x1=$('#dforbg').val()
+        $('#dforou').empty()
+        $('#dforou').append('<option value="">Select</option>')
+         {% for i in dfou %}
+         if(x1=='{{i.BG_Organization_Id}}'){
+           $('#dforou').append('<option value="{{i.Organization_Id}}">{{i.Organization_Name}}</option>')
+         }
+          {% endfor %}
+          if($('#dforou option').length ==2){
+            $('#dforou option:eq(1)').prop('selected', true);
+
+          }
+
+          $('#dforle').empty()
+          $('#dforle').append('<option value="">Select</option>')
+           {% for i in dfle %}
+           if(x1=='{{i.BG_Organization_Id}}'){
+             $('#dforle').append('<option value="{{i.Organization_Id}}">{{i.Organization_Name}}</option>')
+           }
+
+            {% endfor %}
+            if($('#dforle option').length ==2){
+              $('#dforle option:eq(1)').prop('selected', true);
+            }
+
+            $('#dforinv').empty()
+            $('#dforinv').append('<option value="">Select</option>')
+             {% for i in dfinv %}
+             if(x1=='{{i.BG_Organization_Id}}'){
+               $('#dforinv').append('<option value="{{i.Organization_Id}}">{{i.Organization_Name}}</option>')
+             }
+
+              {% endfor %}
+              if($('#dforinv option').length ==2){
+                $('#dforinv option:eq(1)').prop('selected', true);
+              }
+        });
+
+
+        $('#dforle').change(function(){
+          x1=$('#dforle').val()
+
+                  $('#dforinv').empty()
+                  $('#dforinv').append('<option value="">Select</option>')
+                   {% for i in dfinv %}
+                   if(x1=='{{i.LE_Organization_Id}}'){
+                     $('#dforinv').append('<option value="{{i.Organization_Id}}">{{i.Organization_Name}}</option>')
+                   }
+
+                    {% endfor %}
+                    if($('#dforinv option').length ==2){
+                      $('#dforinv option:eq(1)').prop('selected', true);
+                    }
+              });
+
+
+
+        $('#dforou').change(function(){
+          x1=$('#dforou').val()
+
+                $('#dforle').empty()
+                $('#dforle').append('<option value="">Select</option>')
+                 {% for i in dfle %}
+                 if(x1=='{{i.OU_Organization_Id}}'){
+                   $('#dforle').append('<option value="{{i.Organization_Id}}">{{i.Organization_Name}}</option>')
+                 }
+
+                  {% endfor %}
+                  if($('#dforle option').length ==2){
+                    $('#dforle option:eq(1)').prop('selected', true);
+                  }
+                  $('#dforinv').empty()
+                  $('#dforinv').append('<option value="">Select</option>')
+                   {% for i in dfinv %}
+                   if(x1=='{{i.OU_Organization_Id}}'){
+                     $('#dforinv').append('<option value="{{i.Organization_Id}}">{{i.Organization_Name}}</option>')
+                   }
+
+                    {% endfor %}
+                    if($('#dforinv option').length ==2){
+                      $('#dforinv option:eq(1)').prop('selected', true);
+                    }
+
+                    });
+  </script>
+
+{% endblock %}

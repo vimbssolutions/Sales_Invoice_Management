@@ -1,0 +1,71 @@
+6B,6C
+
+Invoice No.
+Invoice Date
+Total Invoice Value
+Supply Type
+Applicable % of Tax Rate
+
+
+Receiver GSTIN/UIN
+Receiver Name
+Place Of Supply
+Invoice Type
+Reverse Charge
+E-Commerce GSTIN
+
+6A
+
+Invoice No.
+Invoice Date
+Total Invoice Value(₹)
+Supply Type
+Applicable % of Tax Rate
+
+GST Payment
+Port Code
+Shipping Bill No.
+Shipping Bill Date
+
+
+5A,5B
+
+Invoice No.
+Invoice Date
+Total Invoice Value(₹)
+Supply Type
+Applicable % of Tax Rate
+
+Sale from Bonded WH
+Place Of Supply
+E-Commerce GSTIN
+
+
+All
+
+
+Receiver GSTIN/UIN
+Receiver Name
+Invoice No.
+Invoice Date
+Total Invoice Value
+Place Of Supply
+Supply Type
+Invoice Type
+
+
+Applicable % of Tax Rate
+E-Commerce GSTIN
+GST Payment
+Port Code
+Shipping Bill No.
+Shipping Bill Date
+Sale from Bonded WH
+
+common
+
+Invoice No.
+Invoice Date
+Total Invoice Value
+Supply Type
+Applicable % of Tax Rate

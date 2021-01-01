@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Sales Invoice</title>
+    <link rel="icon" href="{% static 'logo/Applications/Sales/Small_Invoicing.png'' %}">
+    <link rel="stylesheet" href="{% static 'css/medium-editor.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/other.css' %}">
+
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+    <script src="{% static 'js/medium-editor.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript">
+      {% ifequal alt True %}
+      alert('No data Found');
+      {% endifequal %}
+
+      $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+      document.onkeyup = function(e) {
+        if (e.which == 113) {
+          $('#save').click()
+        } else if (e.which == 115) {
+          $('#search').click()
+        }else if (e.which == 118) {
+          $('#delete').click()
+        }else if (e.which == 119) {
+          $('#cancel').click()
+        }
+      }
+
+      function submitfun(e){
+      $('#'+e).click()
+    }
+    </script>
+    <style>
+    .toolbaricon{
+      background-color: #f2f2f2;
+      width: 40px;
+      height: 40px;
+      padding-top: 0px;
+      padding-left: 0px;
+      padding-right: 0px;
+      padding-bottom: 0px;
+      box-shadow: 00px 2px 5px rgba(0, 0, 0, .5);
+    }
+
+
+</style>
+
+  </head>
+  <body class="loader">
+
+    <nav class="navbar-default techfont custom-navbar divheaderfooter" >
+      <div class="container-fluid">
+
+
+          {% if user.is_authenticated %}
+          <ul class="nav navbar-nav">
+            <li class="dropdown filemenu">
+             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">File<span class="caret"></span></a>
+             <ul class="dropdown-menu">
+                <li><a onclick="submitfun('save');">Save</a></li>
+                <li><a onclick="submitfun('search');">Search</a></li>
+                <li><a onclick="submitfun('delete');">Delete</a></li>
+                <li><a onclick="submitfun('cancel');">Cancel</a></li>
+             </ul>
+           </li>
+          <li class="dropdown">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Invoice<span class="caret"></span></a>
+           <ul class="dropdown-menu">
+             <!-- {% if 'ri_so_invoice' in request.session.Main_Menu %} -->
+            <li><a href="{% url 'saleinvoicedata' %}">Sales Order Invoice</a></li>
+            <!-- {% endif%} -->
+            <li><a href="{% url 'soinvoicesummary' %}">Sales Invoice Summary</a></li>
+            <li> <a href="{% url 'qr_code' %}">QR Code</a></li>
+          </ul>
+         </li>
+
+        </ul>
+
+
+
+        <ul class="nav navbar-nav navbar-right">
+
+
+
+        <li>
+          <a class="nav navbar-right">Welcome : {{user.username}}</a>
+
+        </li>
+        <li>
+          <a class="nav navbar-right" href="{% url 'logout'%}">Logout</a>
+        </li>
+      </ul>
+        {% else %}
+        <ul class="nav navbar-nav navbar-right">
+        <li><a class="nav navbar-right" href="{% url 'register' %}">Register</a></li>
+        <li>
+          <a class="nav navbar-right" href="{% url 'user_login'%}">Login<span class="glyphicon glyphicon-user"></span></a>
+        </li>
+      </ul>
+        {% endif %}
+
+
+
+      </div>
+
+    </nav>
+
+
+          {% block content %}
+
+
+          {% endblock %}
+
+  </body>
+
+</html>
